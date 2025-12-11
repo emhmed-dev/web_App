@@ -1,0 +1,201 @@
+﻿@{
+    Layout = null;
+
+    var products = new[]{
+        new { Title = "جهاز حضور وانصراف", Price = 300, Img="img7.png" },
+        new { Title = "كاميرا مراقبة", Price = 250, Img="img8.png" },
+        new { Title = "جهاز بصمة", Price = 320, Img="img9.png" },
+        new { Title = "حساس أبواب", Price = 80, Img="img11.png" },
+        new { Title = "جهاز إنذار", Price = 220, Img="img12.png" },
+        new { Title = "جهاز حضور وانصراف بصمة", Price = 330, Img="img13.png" },
+        new { Title = "كاميرا داخلية", Price = 190, Img="img14.png" },
+        new { Title = "كاميرا خارجية", Price = 270, Img="img15.png" }
+    };
+
+    var search = Request.QueryString["q"];
+
+    if (!String.IsNullOrWhiteSpace(search))
+    {
+        products = products.Where(p => p.Title.Contains(search)).ToArray();
+    }
+}
+
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="utf-8" />
+    <title>الصفحة الرئيسية</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Cairo', sans-serif;
+            direction: rtl;
+            background-color: #f4f4f4;
+        }
+
+        .header {
+            width: 100%;
+            height: 110px;
+            background-color: #0F2944;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 30px;
+            box-shadow: 0px 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .logo img {
+            height: 100px; 
+            border-radius: 12px;
+        }
+
+        .nav a {
+            color: white;
+            margin-left: 40px;
+            text-decoration: none;
+            font-size: 25px;
+            font-weight: bold;
+            position: relative;
+            padding: 5px 12px;
+            transition: 0.3s ease;
+        }
+
+            .nav a::after {
+                content: "";
+                position: absolute;
+                inset: 0;
+                border: 2px solid #f4f4f4;
+                border-radius: 12px;
+                opacity: 0;
+                transform: scale(0.8);
+                transition: 0.3s ease;
+            }
+
+            .nav a:hover::after {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+            .search-box input {
+                padding: 10px 15px;
+                font-size: 18px;
+                border-radius: 8px;
+                border: 1px solid #ccc;
+                width: 250px;
+            }
+
+            .search-box button {
+                padding: 10px 18px;
+                font-size: 18px;
+                border: none;
+                border-radius: 8px;
+                background-color: cornflowerblue;
+                color: white;
+                cursor: pointer;
+            }
+
+                .search-box button:hover {
+                    background-color: cornflowerblue;
+                }
+
+        .products-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            padding: 30px;
+        }
+
+        .product-card {
+            background-color: white;
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            width: 220px;
+            text-align: center;
+            transition: 0.3s;
+        }
+
+            .product-card img {
+                width: 100%;
+                height: 150px;
+                object-fit: cover;
+                border-radius: 10px;
+                margin-bottom: 10px;
+            }
+
+            .product-card h2 {
+                font-size: 16px;
+                margin: 10px 0 5px;
+            }
+
+            .product-card .price {
+                font-weight: bold;
+                margin: 10px 0;
+                color: #2F4F4F;
+            }
+
+            .product-card a {
+                display: inline-block;
+                background-color: #556B2F;
+                color: white;
+                padding: 8px 15px;
+                border-radius: 8px;
+                text-decoration: none;
+                transition: 0.3s;
+            }
+
+                .product-card a:hover {
+                    background-color: #6B8E23;
+                }
+    </style>
+
+</head>
+<body>
+
+
+    <div class="header">
+
+        <div class="nav">
+            <a href="Products.cshtml">المنتجات</a>
+            <a href="About.cshtml">من نحن</a>
+        </div>
+
+        <form class="search-box" method="get">
+            <input type="text" name="q" placeholder="ابحث عن منتج..." value="@search" />
+            <button type="submit">بحث</button>
+        </form>
+
+        <div class="logo">
+            <img src="/images/App.png" alt="Logo" />
+        </div>
+    </div>
+
+    <div class="products-container">
+
+        @foreach (var item in products)
+        {
+            <div class="product-card">
+                <img src="/images/@item.Img" alt="product" />
+                <h2>@item.Title</h2>
+                <div class="price">$@item.Price</div>
+                <a href="About.cshtml">اطلب الآن</a>
+            </div>
+        }
+
+        @if (products.Length == 0)
+        {
+            <h2 style="color:#333">لا توجد نتائج مطابقة للبحث.</h2>
+        }
+
+    </div>
+
+</body>
+</html>
