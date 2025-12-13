@@ -1,0 +1,172 @@
+﻿@{
+    Layout = null;
+
+    var connectionString = "Data Source=EAM\\SQLEXPRESS;Initial Catalog=internet_web;Integrated Security=True;";
+
+    var users = new List<dynamic>();
+
+    try
+    {
+        using (var con = new System.Data.SqlClient.SqlConnection(connectionString))
+        {
+            con.Open();
+            var sql = "SELECT Id, FirstName, LastName, Email, Phone, Gender, Age, Job, Role FROM AppUsers";
+
+            using (var cmd = new System.Data.SqlClient.SqlCommand(sql, con))
+            {
+                var reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    users.Add(new
+                    {
+                        Id = reader["Id"],
+                        FirstName = reader["FirstName"],
+                        LastName = reader["LastName"],
+                        Email = reader["Email"],
+                        Phone = reader["Phone"],
+                        Gender = reader["Gender"],
+                        Age = reader["Age"],
+                        Job = reader["Job"],
+                        Role = reader["Role"]
+                    });
+                }
+            }
+        }
+    }
+    catch (Exception ex)
+    {
+        <p style="color:red;">خطأ بقاعدة البيانات: @ex.Message</p>;
+    }
+}
+
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <title>عرض بيانات المستخدمين</title>
+
+    <style>
+        body {
+            margin: 0;
+            background-color: #0F2944;
+            font-family: 'Cairo', sans-serif;
+            direction: rtl;
+            padding-top: 50px;
+        }
+
+        .container {
+            width: 85%;
+            margin: auto;
+            background: #fff;
+            padding: 25px;
+            border-radius: 18px;
+            box-shadow: 0 5px 30px rgba(0,0,0,0.25);
+        }
+
+        h1 {
+            text-align: center;
+            color: #2F4F4F;
+            margin-bottom: 25px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+            table th {
+                background-color: #0F2944;
+                color: white;
+                padding: 12px;
+                font-size: 16px;
+            }
+
+            table td {
+                padding: 12px;
+                border-bottom: 1px solid #ddd;
+                text-align: center;
+            }
+
+        .btn {
+            padding: 7px 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            color: white;
+        }
+
+        .edit-btn {
+            background-color: #6B8E23;
+        }
+
+            .edit-btn:hover {
+                background-color: #7fae30;
+            }
+
+        .delete-btn {
+            background-color: #b22222;
+        }
+
+            .delete-btn:hover {
+                background-color: #d22d2d;
+            }
+
+        .back {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+            .back a {
+                color: #2F4F4F;
+                text-decoration: none;
+                font-weight: bold;
+                font-size: 17px;
+            }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <h1>قائمة المستخدمين</h1>
+
+        <table>
+            <tr>
+                <th>الرقم</th>
+                <th>الاسم الكامل</th>
+                <th>الإيميل</th>
+                <th>رقم الهاتف</th>
+                <th>الجنس</th>
+                <th>العمر</th>
+                <th>العمل</th>
+                <th>الصلاحية</th>
+                <th>إجراءات</th>
+            </tr>
+
+            @foreach (var u in users)
+            {
+                <tr>
+                    <td>@u.Id</td>
+                    <td>@u.FirstName @u.LastName</td>
+                    <td>@u.Email</td>
+                    <td>@u.Phone</td>
+                    <td>@u.Gender</td>
+                    <td>@u.Age</td>
+                    <td>@u.Job</td>
+                    <td>@u.Role</td>
+
+                    <td>
+                        <button class="btn edit-btn" onclick="window.location.href='Edit.cshtml?id=@u.Id'">تعديل</button>
+                        <button class="btn delete-btn" onclick="window.location.href='Deleat.cshtml?id=@u.Id'">حذف</button>
+                    </td>
+                </tr>
+            }
+        </table>
+
+       
+    </div>
+
+</body>
+</html>

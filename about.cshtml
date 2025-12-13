@@ -1,0 +1,275 @@
+﻿@{
+    Layout = null;
+    var message = "";
+
+    if (Request.HttpMethod == "POST")
+    {
+        var fullName = Request.Form["full_name"];
+        var quantity = Request.Form["quantity"];
+        var phone = Request.Form["phone"];
+        var notes = Request.Form["notes"];
+
+        if (String.IsNullOrWhiteSpace(fullName) ||
+            String.IsNullOrWhiteSpace(quantity) ||
+            String.IsNullOrWhiteSpace(phone))
+        {
+            message = "ادخل البيانات الأساسية ";
+        }
+        else
+        {
+          
+            var connectionString = "Data Source=EAM\\SQLEXPRESS;Initial Catalog=internet_web;Integrated Security=True;";
+
+            try
+            {
+                using (var con = new System.Data.SqlClient.SqlConnection(connectionString))
+                {
+                    con.Open();
+
+                    var sql = @"INSERT INTO ProductOrders (FullName, Quantity, Phone, Notes)
+                                VALUES (@FullName, @Quantity, @Phone, @Notes)";
+
+                    using (var cmd = new System.Data.SqlClient.SqlCommand(sql, con))
+                    {
+                        cmd.Parameters.AddWithValue("@FullName", fullName);
+                        cmd.Parameters.AddWithValue("@Quantity", quantity);
+                        cmd.Parameters.AddWithValue("@Phone", phone);
+                        cmd.Parameters.AddWithValue("@Notes", notes ?? "");
+
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+
+                message = "✔️ تم استلام الطلب بنجاح، وسيتم التواصل معك قريباً.";
+            }
+            catch (Exception ex)
+            {
+                message = "❌ صار خطأ في قاعدة البيانات: " + ex.Message;
+            }
+        }
+    }
+}
+
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="utf-8" />
+    <title>من نحن</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Cairo', sans-serif;
+            direction: rtl;
+            background-color: #f4f4f4;
+        }
+
+        .header {
+            width: 100%;
+            height: 100px;
+            background-color: #0F2944;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 30px;
+            box-shadow: 0px 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .logo {
+            margin-left: 60px;
+        }
+
+            .logo img {
+                height: 95px;
+                border-radius: 12px;
+            }
+
+        .nav a {
+            color: white;
+            margin-left: 40px;
+            text-decoration: none;
+            font-size: 25px;
+            font-weight: bold;
+            position: relative;
+            padding: 5px 12px;
+            transition: 0.3s ease;
+        }
+
+            .nav a::after {
+                content: "";
+                position: absolute;
+                inset: 0;
+                border: 2px solid #f4f4f4;
+                border-radius: 12px;
+                opacity: 0;
+                transform: scale(0.8);
+                transition: 0.3s ease;
+            }
+
+            .nav a:hover::after {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+        .welcome {
+            text-align: center;
+            margin: 30px 20px 20px 20px;
+        }
+
+            .welcome h1 {
+                font-size: 36px;
+                color: #2F4F4F;
+                margin-bottom: 15px;
+            }
+
+            .welcome p {
+                font-size: 20px;
+                color: #555;
+                line-height: 1.6;
+            }
+
+        .content {
+            max-width: 900px;
+            margin: 20px auto;
+            background-color: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+            .content h2 {
+                margin-bottom: 15px;
+                color: #2F4F4F;
+            }
+
+            .content p {
+                font-size: 18px;
+                color: #555;
+                line-height: 1.6;
+            }
+
+        .order-form {
+            max-width: 600px;
+            margin: 30px auto;
+            padding: 30px;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+            .order-form h2 {
+                text-align: center;
+                margin-bottom: 20px;
+                color: #2F4F4F;
+            }
+
+            .order-form label {
+                display: block;
+                margin-bottom: 8px;
+                font-weight: bold;
+            }
+
+            .order-form input, .order-form textarea {
+                width: 100%;
+                padding: 10px;
+                margin-bottom: 18px;
+                border: 1px solid #ccc;
+                border-radius: 8px;
+                font-size: 16px;
+            }
+
+            .order-form button {
+                width: 100%;
+                padding: 12px;
+                background-color: #0F2944;
+                color: white;
+                border: none;
+                border-radius: 8px;
+                font-size: 18px;
+                cursor: pointer;
+                transition: 0.3s;
+            }
+
+                .order-form button:hover {
+                    background-color: #0F2944;
+                }
+
+        .designer {
+            text-align: center;
+            margin: 50px 20px;
+            padding: 30px;
+            background-color: #d9d4c3;
+            border-radius: 12px;
+        }
+
+            .designer h3 {
+                font-size: 28px;
+                margin-bottom: 15px;
+                color: #2F4F4F;
+            }
+
+            .designer p {
+                font-size: 18px;
+                color: #333;
+            }
+    </style>
+</head>
+<body>
+
+
+    <div class="header">
+        <div class="nav">
+            <a href="Product.cshtml">المنتجات</a>
+            <a href="About.cshtml">من نحن</a>
+        </div>
+
+        <div class="logo">
+            <img src="/images/App.png" alt="Logo" />
+        </div>
+    </div>
+
+    <div class="content">
+        <h2>موقعنا مختص في الأجهزة والحماية الإلكترونية</h2>
+        <p>
+            نحن نوفر حلولًا متكاملة ومتطورة في مجال الأجهزة الذكية وأنظمة الحماية الإلكترونية، مع التزام كامل بتقديم أعلى مستويات الجودة والكفاءة.
+            نعمل على تزويدك بأحدث المنتجات التي تلبي احتياجاتك اليومية سواء للاستخدام الشخصي أو للأعمال، مع ضمان أداء موثوق وتجربة استخدام سلسة.
+
+            اكتشف مجموعة واسعة من الأجهزة الذكية، الملحقات، كاميرات المراقبة، وأنظمة الأمان المتطورة التي تم اختيارها بعناية لتمنحك شعورًا بالراحة والاطمئنان. كما نقدم خدمات تركيب، صيانة، ودعم فني لضمان حصولك على أفضل قيمة مقابل ما تقتنيه.
+
+            نمنحك تجربة شراء آمنة وسهلة عبر منصتنا الإلكترونية، مع خيارات دفع مريحة وتوصيل سريع لضمان وصول منتجاتك في الوقت المناسب.
+
+        </p>
+    </div>
+
+    <div class="order-form">
+        <h2>طلب منتج</h2>
+
+        @if (!String.IsNullOrEmpty(message))
+        {
+            <p style="color:green; font-size:18px; text-align:center; font-weight:bold">@message</p>
+        }
+
+        <form method="post">
+            <label>الاسم الكامل</label>
+            <input type="text" name="full_name" placeholder="أدخل اسمك" required>
+
+            <label>الكمية</label>
+            <input type="number" name="quantity" placeholder="أدخل الكمية" required>
+
+            <label>رقم الهاتف</label>
+            <input type="tel" name="phone" placeholder="أدخل رقم الهاتف" required>
+
+            <label>ملاحظات</label>
+            <textarea name="notes" placeholder="أي ملاحظات إضافية"></textarea>
+
+            <button type="submit">إرسال الطلب</button>
+        </form>
+    </div>
+
+    <div class="designer">
+        <h3>مصمم الموقع</h3>
+        <p>أنا مصمم الموقع، أشرف على تصميم وتطوير كل صفحات الموقع لضمان تجربة مستخدم ممتازة.</p>
+    </div>
+
+</body>
+</html>
